@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Learn about the Indian election process with our AI-powered interactive assistant. Understand voter registration, election timelines, EVMs, and more." />
+  <meta name="keywords" content="election, voting, democracy, India, voter registration, EVM, election commission, education" />
+  <meta name="author" content="Election Education Team" />
+  <meta name="theme-color" content="#6C3CE1" />
+
+  <title>Election Education Assistant | Learn Democracy Interactively</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗳️</text></svg>" />
+</head>
+<body>
+  <!-- Skip Navigation for Accessibility -->
+  <a href="#main-content" class="skip-nav" id="skip-nav">Skip to main content</a>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- Navigation -->
+  <!-- ═══════════════════════════════════════ -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="#" class="nav-logo" id="nav-logo" aria-label="Election Education Home">
+        <span class="logo-icon">🗳️</span>
+        <span class="logo-text">ElectEd</span>
+      </a>
+
+      <div class="nav-links" id="nav-links" role="menubar">
+        <a href="#home" class="nav-link active" role="menuitem" data-section="home">Home</a>
+        <a href="#timeline" class="nav-link" role="menuitem" data-section="timeline">Timeline</a>
+        <a href="#voter-guide" class="nav-link" role="menuitem" data-section="voter-guide">Voter Guide</a>
+        <a href="#election-types" class="nav-link" role="menuitem" data-section="election-types">Elections</a>
+        <a href="#quiz" class="nav-link" role="menuitem" data-section="quiz">Quiz</a>
+        <a href="#chat" class="nav-link" role="menuitem" data-section="chat">AI Assistant</a>
+      </div>
+
+      <div class="nav-actions">
+        <div id="google_translate_element" class="google-translate-wrapper"></div>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode" title="Toggle theme">
+          <span class="theme-icon" id="theme-icon">🌙</span>
+        </button>
+        <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- Main Content -->
+  <!-- ═══════════════════════════════════════ -->
+  <main id="main-content">
+
+    <!-- ─── Hero Section ─── -->
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="hero-bg">
+        <div class="hero-particles" id="hero-particles"></div>
+        <div class="hero-gradient"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge animate-fade-in">
+          <span class="badge-dot"></span>
+          AI-Powered Election Education
+        </div>
+        <h1 id="hero-title" class="hero-title animate-slide-up">
+          Understand Your <span class="gradient-text">Democracy</span>
+        </h1>
+        <p class="hero-subtitle animate-slide-up delay-1">
+          An interactive guide to India's election process — from voter registration to results day.
+          Learn, explore, and test your knowledge with our AI-powered assistant.
+        </p>
+        <div class="hero-actions animate-slide-up delay-2">
+          <button class="btn btn-primary btn-lg" id="hero-explore-btn" onclick="navigateTo('timeline')">
+            <span>Explore Timeline</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <button class="btn btn-outline btn-lg" id="hero-chat-btn" onclick="navigateTo('chat')">
+            <span>Ask AI Assistant</span>
+            <span aria-hidden="true">🤖</span>
+          </button>
+        </div>
+        <div class="hero-stats animate-fade-in delay-3">
+          <div class="stat-item">
+            <span class="stat-number" id="stat-voters">96.8Cr+</span>
+            <span class="stat-label">Eligible Voters</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">10L+</span>
+            <span class="stat-label">Polling Stations</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">543</span>
+            <span class="stat-label">Lok Sabha Seats</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-scroll-indicator" aria-hidden="true">
+        <div class="scroll-mouse">
+          <div class="scroll-wheel"></div>
+        </div>
+        <span>Scroll to explore</span>
+      </div>
+    </section>
+
+    <!-- ─── Did You Know Ticker ─── -->
+    <section class="fact-ticker" aria-label="Election facts ticker">
+      <div class="ticker-container" id="fact-ticker">
+        <div class="ticker-content" id="ticker-content">
+          <!-- Facts loaded dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Election Timeline ─── -->
+    <section class="section" id="timeline" aria-labelledby="timeline-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">📅 Step by Step</span>
+          <h2 id="timeline-title" class="section-title">Election <span class="gradient-text">Timeline</span></h2>
+          <p class="section-subtitle">Follow the complete journey of an Indian election — from announcement to results declaration.</p>
+        </div>
+
+        <div class="timeline" id="timeline-container" role="list" aria-label="Election process timeline">
+          <!-- Timeline items loaded dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Voter Guide ─── -->
+    <section class="section section-alt" id="voter-guide" aria-labelledby="voter-guide-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">📝 Your Guide</span>
+          <h2 id="voter-guide-title" class="section-title">Voter <span class="gradient-text">Guide</span></h2>
+          <p class="section-subtitle">Everything you need to know about registering as a voter and casting your vote.</p>
+        </div>
+
+        <div class="guide-tabs" role="tablist" aria-label="Voter guide sections">
+          <button class="guide-tab active" role="tab" aria-selected="true" aria-controls="tab-eligibility" id="tab-btn-eligibility" data-tab="eligibility">✅ Eligibility</button>
+          <button class="guide-tab" role="tab" aria-selected="false" aria-controls="tab-registration" id="tab-btn-registration" data-tab="registration">📝 Registration</button>
+          <button class="guide-tab" role="tab" aria-selected="false" aria-controls="tab-pollingDay" id="tab-btn-pollingDay" data-tab="pollingDay">🗳️ Polling Day</button>
+          <button class="guide-tab" role="tab" aria-selected="false" aria-controls="tab-documents" id="tab-btn-documents" data-tab="documents">🪪 Documents</button>
+        </div>
+
+        <div class="guide-content" id="guide-content">
+          <!-- Tab content loaded dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Election Types ─── -->
+    <section class="section" id="election-types" aria-labelledby="election-types-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">🏛️ Types</span>
+          <h2 id="election-types-title" class="section-title">Types of <span class="gradient-text">Elections</span></h2>
+          <p class="section-subtitle">India holds various types of elections at national, state, and local levels.</p>
+        </div>
+
+        <div class="election-types-grid" id="election-types-grid">
+          <!-- Election type cards loaded dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Quiz Section ─── -->
+    <section class="section section-alt" id="quiz" aria-labelledby="quiz-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">🧠 Test Yourself</span>
+          <h2 id="quiz-title" class="section-title">Election <span class="gradient-text">Quiz</span></h2>
+          <p class="section-subtitle">Test your knowledge about the Indian election process and see how much you've learned!</p>
+        </div>
+
+        <div class="quiz-controls" id="quiz-controls">
+          <div class="quiz-filters">
+            <label for="quiz-category" class="sr-only">Category</label>
+            <select id="quiz-category" class="quiz-select" aria-label="Select quiz category">
+              <option value="">All Categories</option>
+              <option value="basics">Basics</option>
+              <option value="process">Process</option>
+              <option value="technology">Technology</option>
+              <option value="constitutional">Constitutional</option>
+            </select>
+            <label for="quiz-difficulty" class="sr-only">Difficulty</label>
+            <select id="quiz-difficulty" class="quiz-select" aria-label="Select difficulty">
+              <option value="">All Difficulties</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="start-quiz-btn" onclick="startQuiz()">
+            Start Quiz
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="quiz-container" id="quiz-container" style="display: none;">
+          <!-- Quiz questions loaded dynamically -->
+        </div>
+
+        <div class="quiz-results" id="quiz-results" style="display: none;">
+          <!-- Quiz results displayed here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── AI Chat Assistant ─── -->
+    <section class="section" id="chat" aria-labelledby="chat-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">🤖 AI Powered</span>
+          <h2 id="chat-title" class="section-title">Election <span class="gradient-text">Assistant</span></h2>
+          <p class="section-subtitle">Ask any question about the Indian election process. Powered by Google Gemini AI.</p>
+        </div>
+
+        <div class="chat-widget" id="chat-widget" role="region" aria-label="AI Chat Assistant">
+          <div class="chat-header">
+            <div class="chat-avatar">
+              <span aria-hidden="true">🗳️</span>
+            </div>
+            <div class="chat-info">
+              <h3>ElectEd AI Assistant</h3>
+              <span class="chat-status" id="chat-status">
+                <span class="status-dot"></span>
+                <span id="chat-status-text">Checking...</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Chat messages">
+            <div class="chat-message assistant">
+              <div class="message-avatar" aria-hidden="true">🗳️</div>
+              <div class="message-content">
+                <p>Welcome! 👋 I'm your Election Education Assistant. I can help you understand the Indian election process, voter registration, EVMs, and much more.</p>
+                <p>Try asking me something like:</p>
+                <div class="suggestion-chips">
+                  <button class="suggestion-chip" onclick="sendSuggestion('How do I register to vote?')">How do I register to vote?</button>
+                  <button class="suggestion-chip" onclick="sendSuggestion('What is EVM and VVPAT?')">What is EVM and VVPAT?</button>
+                  <button class="suggestion-chip" onclick="sendSuggestion('Explain the election timeline')">Explain the election timeline</button>
+                  <button class="suggestion-chip" onclick="sendSuggestion('What is NOTA?')">What is NOTA?</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <label for="chat-input" class="sr-only">Type your question about elections</label>
+            <input
+              type="text"
+              id="chat-input"
+              class="chat-input"
+              placeholder="Ask about elections, voting, or democracy..."
+              maxlength="2000"
+              autocomplete="off"
+              aria-label="Type your question about elections"
+            />
+            <button class="chat-send-btn" id="chat-send-btn" onclick="sendMessage()" aria-label="Send message" title="Send message">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- Footer -->
+  <!-- ═══════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">🗳️</span>
+          <span class="logo-text">ElectEd</span>
+          <p class="footer-tagline">Making democracy accessible through education.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>Learn</h4>
+            <a href="#timeline">Election Timeline</a>
+            <a href="#voter-guide">Voter Guide</a>
+            <a href="#election-types">Election Types</a>
+          </div>
+          <div class="footer-col">
+            <h4>Interact</h4>
+            <a href="#quiz">Take the Quiz</a>
+            <a href="#chat">AI Assistant</a>
+          </div>
+          <div class="footer-col">
+            <h4>Resources</h4>
+            <a href="https://www.eci.gov.in" target="_blank" rel="noopener noreferrer">ECI Official Site</a>
+            <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer">Voter Portal</a>
+            <a href="https://results.eci.gov.in" target="_blank" rel="noopener noreferrer">Election Results</a>
+          </div>
+          <div class="footer-col footer-map">
+            <h4>Find Election Office</h4>
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.9961726716946!2d77.21175631508247!3d28.632204582417743!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd36c2e39dd3%3A0x6b107e0c46b6a38!2sElection%20Commission%20of%20India!5e0!3m2!1sen!2sin!4v1650000000000!5m2!1sen!2sin" 
+              width="100%" 
+              height="150" 
+              style="border:0; border-radius: 8px; margin-top: 10px;" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Election Commission of India Map"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 ElectEd — Election Process Education. Built with ❤️ for Indian Democracy.</p>
+        <p class="footer-disclaimer">This is an educational tool. For official information, visit <a href="https://www.eci.gov.in" target="_blank" rel="noopener noreferrer">eci.gov.in</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Google Translate Integration -->
+  <script>
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE },
+        'google_translate_element'
+      );
+    }
+  </script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/timeline.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/accessibility.js"></script>
+</body>
+</html>
