@@ -1,0 +1,26 @@
+# Dependencies - installed during build
+node_modules/
+
+# Development files
+.git/
+.gitignore
+.env
+.env.example
+.vscode/
+.idea/
+
+# Test & Coverage
+coverage/
+backend/tests/
+
+# Documentation & metadata
+README.md
+*.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log

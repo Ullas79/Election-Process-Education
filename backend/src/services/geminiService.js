@@ -87,15 +87,25 @@ export async function generateResponse(userMessage, conversationHistory = []) {
       })),
     });
 
-    const result = await chat.sendMessage(userMessage);
-    const response = result.response.text();
+    const result = await chat.sendMessage([{ text: userMessage }]);
+    const response = result.response;
 
-    logger.info(`Gemini response generated for: "${userMessage.substring(0, 50)}..."`);
-    return response;
+    // Extract text from Vertex AI response format
+    const text =
+      response?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      (typeof response?.text === 'function' ? response.text() : null);
+
+    if (!text) {
+      logger.warn('Empty response from Vertex AI, using fallback');
+      return getFallbackResponse(userMessage);
+    }
+
+    logger.info(`Vertex AI response generated for: "${userMessage.substring(0, 50)}..."`);
+    return text;
   } catch (error) {
-    logger.error('Gemini API error:', error.message);
+    logger.error('Vertex AI error:', error.message);
 
-    if (error.message?.includes('SAFETY')) {
+    if (error.message?.includes('SAFETY') || error.message?.includes('blocked')) {
       return "I'm sorry, but I can't respond to that query as it may involve sensitive content. Please ask me about the election process, voter registration, or how democracy works in India!";
     }
 

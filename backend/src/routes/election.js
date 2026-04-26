@@ -17,6 +17,7 @@ const router = Router();
  * Get the complete election process timeline
  */
 router.get('/timeline', (_req, res) => {
+  res.set('Cache-Control', 'public, max-age=3600'); // 1 hour — static content
   res.json({ timeline: electionTimeline });
 });
 
@@ -25,6 +26,7 @@ router.get('/timeline', (_req, res) => {
  * Get the comprehensive voter guide
  */
 router.get('/voter-guide', (_req, res) => {
+  res.set('Cache-Control', 'public, max-age=3600');
   res.json({ guide: voterGuide });
 });
 
@@ -33,6 +35,7 @@ router.get('/voter-guide', (_req, res) => {
  * Get information about different types of elections
  */
 router.get('/types', (_req, res) => {
+  res.set('Cache-Control', 'public, max-age=3600');
   res.json({ types: electionTypes });
 });
 
@@ -42,6 +45,7 @@ router.get('/types', (_req, res) => {
  * @query {number} count - Number of facts to return (default: 3)
  */
 router.get('/facts', (req, res) => {
+  res.set('Cache-Control', 'public, max-age=300'); // 5 min — randomized output
   const count = Math.min(Math.max(parseInt(req.query.count) || 3, 1), 12);
   const shuffled = [...electionFacts].sort(() => Math.random() - 0.5);
   res.json({ facts: shuffled.slice(0, count) });

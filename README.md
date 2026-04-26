@@ -153,9 +153,12 @@ npm run test:coverage
 ### Docker
 
 ```bash
-# Build and run with Docker
+# Build and run with Docker (multi-stage build)
 docker build -t elected .
-docker run -p 3000:3000 -e GEMINI_API_KEY=your_key elected
+docker run -p 3000:3000 \
+  -e GCP_PROJECT_ID=your_project_id \
+  -e GCP_LOCATION=us-central1 \
+  elected
 ```
 
 ---
@@ -183,7 +186,8 @@ Election-Process-Education/
 │   └── tests/
 │       ├── chat.test.js           # Chat API tests
 │       ├── quiz.test.js           # Quiz API tests
-│       └── election.test.js       # Election data tests
+│       ├── election.test.js       # Election data tests
+│       └── security.test.js       # Security & XSS tests
 ├── frontend/
 │   ├── index.html                 # Single-page application
 │   ├── css/
@@ -196,7 +200,8 @@ Election-Process-Education/
 │       ├── quiz.js                # Quiz engine module
 │       └── accessibility.js       # Accessibility enhancements
 ├── package.json
-├── Dockerfile
+├── Dockerfile                     # Multi-stage production build
+├── .dockerignore                  # Docker build exclusions
 ├── .env.example
 ├── .gitignore
 └── README.md
@@ -208,13 +213,14 @@ Election-Process-Education/
 
 | Feature | Implementation |
 |---------|---------------|
-| **Security Headers** | Helmet.js with strict CSP, CORS, referrer policy |
+| **Security Headers** | Helmet.js with strict CSP (whitelisted Google domains only) |
 | **Rate Limiting** | API: 100 req/15min, Chat: 10 req/min |
-| **Input Sanitization** | XSS prevention, HTML stripping, length limits |
+| **Input Sanitization** | XSS prevention: HTML, javascript:, data:, vbscript:, event handlers, CSS expression() |
 | **Parameter Pollution** | HPP middleware prevents HTTP parameter pollution |
 | **Request Size Limits** | 10KB body limit prevents payload abuse |
-| **Content Safety** | Gemini safety settings block harmful content |
-| **Non-root Docker** | Container runs as non-root user |
+| **Content Safety** | Vertex AI safety settings block harmful content |
+| **Non-root Docker** | Multi-stage build, container runs as non-root user |
+| **Cache Control** | Static data endpoints use Cache-Control headers |
 
 ---
 
@@ -234,10 +240,11 @@ Election-Process-Education/
 
 ## 🧪 Testing
 
-The test suite covers:
+The test suite covers **54 tests** across 4 suites:
 - **Chat API**: Input validation, sanitization, conversation history, error handling
 - **Quiz API**: Question filtering, answer checking, scoring, edge cases
 - **Election Data API**: Timeline, voter guide, election types, facts
+- **Security**: XSS sanitization (11 vectors), CSP header verification, API protection
 - **Health Check**: Server status verification
 
 ---

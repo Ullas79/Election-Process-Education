@@ -157,6 +157,11 @@ const Quiz = {
 
     results.style.display = 'block';
 
+    // Screen reader announcement
+    if (typeof Accessibility !== 'undefined') {
+      Accessibility.announce(`Quiz complete. You scored ${data.score} out of ${data.total}. ${data.grade}`);
+    }
+
     // Determine theme color for score
     let scoreColor = 'var(--primary-500)';
     if (data.percentage >= 70) scoreColor = 'var(--success-500)';

@@ -33,7 +33,10 @@ const Chat = {
       const statusText = document.getElementById('chat-status-text');
 
       if (statusDot) statusDot.classList.add('online');
-      if (statusText) statusText.textContent = data.mode;
+      if (statusText) {
+        statusText.textContent = data.mode;
+        statusText.setAttribute('aria-label', `AI Status: ${data.mode}`);
+      }
     } catch {
       const statusText = document.getElementById('chat-status-text');
       if (statusText) statusText.textContent = 'Knowledge Base (Offline)';
@@ -78,6 +81,11 @@ const Chat = {
 
       // Add assistant response
       this.addMessage('assistant', data.response);
+
+      // Screen reader announcement
+      if (typeof Accessibility !== 'undefined') {
+        Accessibility.announce('Assistant responded to your question');
+      }
 
       // Update history
       this.history.push(
