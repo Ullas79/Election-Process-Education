@@ -52,6 +52,7 @@ export function securityHeaders() {
         baseUri: ["'self'"],
         formAction: ["'self'"],
         frameAncestors: ["'self'"],
+        scriptSrcAttr: ["'unsafe-inline'"],
       },
     },
     crossOriginEmbedderPolicy: false,
