@@ -28,6 +28,9 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust the first proxy in Google Cloud Run to correctly parse X-Forwarded-For
+app.set('trust proxy', 1);
+
 // ────────────────────────────────────────
 // Security Middleware
 // ────────────────────────────────────────
