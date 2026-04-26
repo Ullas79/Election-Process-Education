@@ -251,6 +251,7 @@ const DataLoader = {
                 src="https://www.youtube.com/embed/g2qYhW2r4g8" 
                 title="How to Vote using EVM-VVPAT" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                loading="lazy"
                 allowfullscreen>
               </iframe>
             </div>
@@ -322,6 +323,40 @@ document.addEventListener('click', (e) => {
     DataLoader.renderGuideTab(tab.dataset.tab);
   }
 });
+
+// ════════════════════════════════════════
+// Geolocation Map Features
+// ════════════════════════════════════════
+window.findNearbyPollingStation = function() {
+  const btn = document.getElementById('locate-station-btn');
+  const iframe = document.getElementById('google-maps-iframe');
+  
+  if (!navigator.geolocation) {
+    alert('Geolocation is not supported by your browser');
+    return;
+  }
+  
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '<span aria-hidden="true">⏳</span> Locating...';
+  
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      // Update iframe src to search for polling stations near the user
+      const mapUrl = `https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d15000!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1spolling+station!5e0!3m2!1sen!2sin!4v1`;
+      
+      iframe.src = mapUrl;
+      btn.innerHTML = '<span aria-hidden="true">✅</span> Location Found';
+      setTimeout(() => btn.innerHTML = originalHtml, 3000);
+    }, 
+    (error) => {
+      console.warn('Geolocation error:', error);
+      alert('Unable to retrieve your location. Please check your browser permissions.');
+      btn.innerHTML = originalHtml;
+    }
+  );
+};
 
 // ════════════════════════════════════════
 // Initialize Application
