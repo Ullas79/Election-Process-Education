@@ -1847,6 +1847,17 @@ body {
   display: none !important;
 }
 
+/* Hide annoying Google Translate tooltips and highlights on hover */
+.goog-te-balloon-frame,
+#goog-gt-tt {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
 body {
   top: 0px !important;
 }

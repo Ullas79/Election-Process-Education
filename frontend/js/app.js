@@ -248,7 +248,7 @@ const DataLoader = {
             <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
               <iframe 
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-                src="https://www.youtube.com/embed/g2qYhW2r4g8" 
+                src="https://www.youtube.com/embed/QtZIlxw871I" 
                 title="How to Vote using EVM-VVPAT" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 loading="lazy"

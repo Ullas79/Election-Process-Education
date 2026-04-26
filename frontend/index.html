@@ -319,9 +319,14 @@
           </div>
           <div class="footer-col footer-map">
             <h4>Find Polling Station</h4>
-            <button class="btn btn-outline" id="locate-station-btn" style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; font-size: 0.875rem;" onclick="findNearbyPollingStation()">
-              <span aria-hidden="true">📍</span> Locate Near Me
-            </button>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <button class="btn btn-outline" id="locate-station-btn" style="flex: 1; padding: 0.5rem; font-size: 0.8rem;" onclick="findNearbyPollingStation()">
+                <span aria-hidden="true">📍</span> Locate Near Me
+              </button>
+              <a href="https://electoralsearch.eci.gov.in/" target="_blank" class="btn btn-primary" style="flex: 1; padding: 0.5rem; font-size: 0.8rem; text-align: center; text-decoration: none;">
+                Official Portal
+              </a>
+            </div>
             <iframe 
               id="google-maps-iframe"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.9961726716946!2d77.21175631508247!3d28.632204582417743!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd36c2e39dd3%3A0x6b107e0c46b6a38!2sElection%20Commission%20of%20India!5e0!3m2!1sen!2sin!4v1650000000000!5m2!1sen!2sin" 
