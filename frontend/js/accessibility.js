@@ -9,6 +9,36 @@ const Accessibility = {
     this.setupAriaLiveRegions();
     this.setupReducedMotion();
     this.setupFocusManagement();
+    this.setupTextResizer();
+  },
+
+  /**
+   * Setup text resizer (A- / A+)
+   */
+  setupTextResizer() {
+    const btnDecrease = document.getElementById('text-decrease');
+    const btnIncrease = document.getElementById('text-increase');
+    const htmlElement = document.documentElement;
+    let currentSize = 16; // default 16px
+
+    const updateTextSize = (newSize) => {
+      // Limit size between 12px and 24px
+      currentSize = Math.max(12, Math.min(newSize, 24));
+      htmlElement.style.fontSize = `${currentSize}px`;
+      localStorage.setItem('preferred-text-size', currentSize);
+      this.announce(`Text size changed to ${currentSize} pixels`);
+    };
+
+    // Load saved preference
+    const savedSize = localStorage.getItem('preferred-text-size');
+    if (savedSize) {
+      updateTextSize(parseInt(savedSize, 10));
+    }
+
+    if (btnDecrease && btnIncrease) {
+      btnDecrease.addEventListener('click', () => updateTextSize(currentSize - 2));
+      btnIncrease.addEventListener('click', () => updateTextSize(currentSize + 2));
+    }
   },
 
   /**

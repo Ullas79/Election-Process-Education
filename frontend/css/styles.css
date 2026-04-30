@@ -1871,6 +1871,49 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+/* Accessibility: Text Resizer */
+.text-resizer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.resizer-btn {
+  background: transparent;
+  border: 1px solid var(--primary-light);
+  color: var(--primary-color);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.resizer-btn:hover {
+  background: var(--primary-light);
+  color: var(--white);
+}
+
+.dark-mode .resizer-btn {
+  border-color: var(--primary-color);
+  color: var(--primary-light);
+}
+
+.dark-mode .resizer-btn:hover {
+  background: var(--primary-color);
+  color: var(--dark-bg);
+}
+
+/* Accessibility: Reduced Motion */
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
 /* High contrast mode */
 @media (prefers-contrast: high) {
   :root {

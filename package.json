@@ -24,6 +24,7 @@
   "type": "module",
   "dependencies": {
     "@google-cloud/vertexai": "^1.9.2",
+    "apicache": "^1.6.3",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

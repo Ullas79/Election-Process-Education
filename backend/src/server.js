@@ -5,6 +5,7 @@
 import express from 'express';
 import cors from 'cors';
 import compression from 'compression';
+import apicache from 'apicache';
 import morgan from 'morgan';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -75,9 +76,11 @@ app.use('/api/', apiLimiter);
 // ────────────────────────────────────────
 // API Routes
 // ────────────────────────────────────────
-app.use('/api/chat', chatRoutes);
-app.use('/api/quiz', quizRoutes);
-app.use('/api/election', electionRoutes);
+const cache = apicache.middleware;
+
+app.use('/api/chat', chatRoutes); // Dynamic, do not cache
+app.use('/api/quiz', cache('1 hour'), quizRoutes); // Static content, cache for 1 hour
+app.use('/api/election', cache('1 hour'), electionRoutes); // Static content, cache for 1 hour
 
 // Health check endpoint
 app.get('/api/health', (_req, res) => {
