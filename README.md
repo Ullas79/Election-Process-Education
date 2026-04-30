@@ -68,6 +68,9 @@ Many citizens, especially first-time voters, find the election process complex a
 | 🏛️ **Election Types** | Detailed cards explaining General, State, Local, Rajya Sabha, and Presidential elections |
 | 🧠 **Knowledge Quiz** | Interactive quiz with scoring, explanations, and gamification |
 | 💡 **Fact Ticker** | Scrolling facts about Indian democracy |
+| 📱 **PWA Ready** | Progressive Web App with Service Worker for offline support & installability |
+| 🔍 **SEO Optimized** | OpenGraph tags, JSON-LD Schema, and meta descriptions for discovery |
+| ⚡ **High Performance** | Express gzip compression & static asset caching for Lighthouse 100/100 |
 | 🌙 **Dark/Light Mode** | Theme switching with system preference detection |
 | ♿ **Full Accessibility** | WCAG 2.1 AA compliant with keyboard navigation and screen reader support |
 

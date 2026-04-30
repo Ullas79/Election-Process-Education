@@ -10,6 +10,18 @@
 
   <title>Election Education Assistant | Learn Democracy Interactively</title>
 
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- SEO & OpenGraph Meta Tags -->
+  <meta property="og:title" content="Election Education Assistant" />
+  <meta property="og:description" content="Learn about the Indian election process with our AI-powered interactive assistant. Understand voter registration, EVMs, and more." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://elected-app-1031806887295.asia-south1.run.app" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Election Education Assistant" />
+  <meta name="twitter:description" content="Learn about the Indian election process with our AI-powered interactive assistant." />
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -365,5 +377,16 @@
   <script src="js/chat.js"></script>
   <script src="js/quiz.js"></script>
   <script src="js/accessibility.js"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('ServiceWorker registered'))
+          .catch(err => console.log('ServiceWorker registration failed: ', err));
+      });
+    }
+  </script>
 </body>
 </html>
