@@ -329,11 +329,11 @@
           </div>
           <div class="footer-col footer-map">
             <h4>Find Polling Station</h4>
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-              <button class="btn btn-outline" id="locate-station-btn" style="flex: 1; padding: 0.5rem; font-size: 0.8rem;" onclick="findNearbyPollingStation()">
+            <div class="footer-map-actions">
+              <button class="btn btn-outline footer-map-btn" id="locate-station-btn" onclick="findNearbyPollingStation()">
                 <span aria-hidden="true">📍</span> Locate Near Me
               </button>
-              <a href="https://electoralsearch.eci.gov.in/" target="_blank" class="btn btn-primary" style="flex: 1; padding: 0.5rem; font-size: 0.8rem; text-align: center; text-decoration: none;">
+              <a href="https://electoralsearch.eci.gov.in/" target="_blank" rel="noopener noreferrer" class="btn btn-primary footer-map-btn">
                 Official Portal
               </a>
             </div>
@@ -342,11 +342,11 @@
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.9961726716946!2d77.21175631508247!3d28.632204582417743!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd36c2e39dd3%3A0x6b107e0c46b6a38!2sElection%20Commission%20of%20India!5e0!3m2!1sen!2sin!4v1650000000000!5m2!1sen!2sin" 
               width="100%" 
               height="150" 
-              style="border:0; border-radius: 8px; margin-top: 5px;" 
+              class="footer-map-iframe"
               allowfullscreen="" 
               loading="lazy" 
               referrerpolicy="no-referrer-when-downgrade"
-              title="Election Commission of India Map"
+              title="Interactive map showing the Election Commission of India headquarters — use Locate Near Me to find your polling station"
             ></iframe>
           </div>
         </div>
@@ -369,12 +369,12 @@
   </script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-  <!-- Scripts -->
-  <script src="js/app.js"></script>
-  <script src="js/timeline.js"></script>
-  <script src="js/chat.js"></script>
-  <script src="js/quiz.js"></script>
-  <script src="js/accessibility.js"></script>
+  <!-- Scripts (deferred for non-blocking page render) -->
+  <script src="js/app.js" defer></script>
+  <script src="js/timeline.js" defer></script>
+  <script src="js/chat.js" defer></script>
+  <script src="js/quiz.js" defer></script>
+  <script src="js/accessibility.js" defer></script>
 
   <!-- PWA Service Worker Registration -->
   <script>

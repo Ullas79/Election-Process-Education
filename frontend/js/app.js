@@ -156,7 +156,7 @@ const DataLoader = {
       const data = await res.json();
       this.renderElectionTypes(data.types);
     } catch {
-      console.warn('Failed to load election types');
+      // Graceful degradation: section renders empty if data fails to load
     }
   },
 
@@ -197,7 +197,7 @@ const DataLoader = {
       window._voterGuide = data.guide;
       this.renderGuideTab('eligibility');
     } catch {
-      console.warn('Failed to load voter guide');
+      // Graceful degradation: voter guide renders empty if data fails to load
     }
   },
 
@@ -243,11 +243,11 @@ const DataLoader = {
       
       if (tabName === 'pollingDay') {
         html += `
-          <div class="guide-video-container" style="margin-top: 2rem; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-md);">
-            <h4 style="margin-bottom: 1rem;">Educational Video: How EVM works</h4>
-            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+          <div class="guide-video-container">
+            <h4>Educational Video: How EVM works</h4>
+            <div class="guide-video-wrapper">
               <iframe 
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                class="guide-video-iframe"
                 src="https://www.youtube.com/embed/QtZIlxw871I" 
                 title="How to Vote using EVM-VVPAT" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -324,15 +324,39 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// ════════════════════════════════════════
-// Geolocation Map Features
-// ════════════════════════════════════════
+/**
+ * Show an inline toast notification instead of alert()
+ * @param {string} message - Text to display
+ * @param {string} type - 'error' | 'info'
+ */
+function showToast(message, type = 'error') {
+  // Remove any existing toast
+  const existing = document.querySelector('.toast-notification');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = `toast-notification toast-${type}`;
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'assertive');
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Trigger entrance animation
+  requestAnimationFrame(() => toast.classList.add('toast-visible'));
+
+  // Auto-dismiss
+  setTimeout(() => {
+    toast.classList.remove('toast-visible');
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
 window.findNearbyPollingStation = function() {
   const btn = document.getElementById('locate-station-btn');
   const iframe = document.getElementById('google-maps-iframe');
   
   if (!navigator.geolocation) {
-    alert('Geolocation is not supported by your browser');
+    showToast('Geolocation is not supported by your browser');
     return;
   }
   
@@ -350,9 +374,8 @@ window.findNearbyPollingStation = function() {
       btn.innerHTML = '<span aria-hidden="true">✅</span> Location Found';
       setTimeout(() => btn.innerHTML = originalHtml, 3000);
     }, 
-    (error) => {
-      console.warn('Geolocation error:', error);
-      alert('Unable to retrieve your location. Please check your browser permissions.');
+    () => {
+      showToast('Unable to retrieve your location. Please check your browser permissions.');
       btn.innerHTML = originalHtml;
     }
   );
@@ -370,6 +393,5 @@ document.addEventListener('DOMContentLoaded', () => {
   DataLoader.loadVoterGuide();
   ScrollAnimations.init();
 
-  // Log app ready
-  console.log('🗳️ ElectEd — Election Education Assistant loaded');
+  // Application ready
 });

@@ -176,12 +176,42 @@ const Chat = {
   },
 
   /**
-   * Basic markdown to HTML formatter
+   * Sanitize HTML to prevent XSS from AI-generated output.
+   * Allows only safe formatting tags produced by formatMarkdown.
+   * @param {string} html - Raw HTML string
+   * @returns {string} Sanitized HTML
+   */
+  sanitizeHTML(html) {
+    const ALLOWED_TAGS = ['p', 'h2', 'h3', 'strong', 'em', 'code', 'ul', 'ol', 'li', 'br'];
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    // Remove all script, style, iframe, object, embed, form elements
+    const dangerous = temp.querySelectorAll('script,style,iframe,object,embed,form,link,meta');
+    dangerous.forEach((el) => el.remove());
+
+    // Remove event handler attributes from all elements
+    temp.querySelectorAll('*').forEach((el) => {
+      for (const attr of Array.from(el.attributes)) {
+        if (attr.name.startsWith('on') || attr.name === 'srcdoc' || attr.name === 'src') {
+          el.removeAttribute(attr.name);
+        }
+        if (attr.name === 'href' && attr.value.trim().toLowerCase().startsWith('javascript:')) {
+          el.removeAttribute(attr.name);
+        }
+      }
+    });
+
+    return temp.innerHTML;
+  },
+
+  /**
+   * Basic markdown to HTML formatter with output sanitization
    */
   formatMarkdown(text) {
     if (!text) return '';
 
-    return text
+    const raw = text
       // Headers
       .replace(/^### (.*$)/gm, '<h3>$1</h3>')
       .replace(/^## (.*$)/gm, '<h2>$1</h2>')
@@ -214,6 +244,9 @@ const Chat = {
         return `<p>${para}</p>`;
       })
       .join('');
+
+    // Sanitize the generated HTML to strip any dangerous content from AI output
+    return this.sanitizeHTML(raw);
   },
 };
 

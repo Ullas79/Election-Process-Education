@@ -1,6 +1,6 @@
 /**
  * Quiz Module
- * Interactive election knowledge quiz with scoring
+ * Interactive election knowledge quiz with scoring and accessibility support
  */
 
 const Quiz = {
@@ -8,6 +8,34 @@ const Quiz = {
   currentIndex: 0,
   answers: [],
   submitted: false,
+
+  /**
+   * Show an inline error message instead of alert()
+   * @param {string} message - Error text
+   */
+  showError(message) {
+    const container = document.getElementById('quiz-container');
+    const controls = document.getElementById('quiz-controls');
+    const target = container?.style.display !== 'none' ? container : controls;
+    if (!target) return;
+
+    // Remove any existing error
+    const existing = target.querySelector('.quiz-error-msg');
+    if (existing) existing.remove();
+
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'quiz-error-msg';
+    errorDiv.setAttribute('role', 'alert');
+    errorDiv.setAttribute('aria-live', 'assertive');
+    errorDiv.textContent = message;
+
+    target.prepend(errorDiv);
+
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      if (errorDiv.parentNode) errorDiv.remove();
+    }, 5000);
+  },
 
   async start() {
     const category = document.getElementById('quiz-category')?.value || '';
@@ -22,7 +50,7 @@ const Quiz = {
       const data = await res.json();
 
       if (!data.questions || data.questions.length === 0) {
-        alert('No questions available for the selected filters. Try different options.');
+        this.showError('No questions available for the selected filters. Try different options.');
         return;
       }
 
@@ -38,8 +66,7 @@ const Quiz = {
 
       this.renderQuestion();
     } catch (err) {
-      console.error('Failed to load quiz:', err);
-      alert('Failed to load quiz questions. Please try again.');
+      this.showError('Failed to load quiz questions. Please try again.');
     }
   },
 
@@ -54,7 +81,7 @@ const Quiz = {
 
     container.innerHTML = `
       <div class="quiz-progress">
-        <div class="quiz-progress-bar">
+        <div class="quiz-progress-bar" role="progressbar" aria-valuenow="${this.currentIndex + 1}" aria-valuemin="1" aria-valuemax="${totalQuestions}">
           <div class="quiz-progress-fill" style="width: ${progress}%"></div>
         </div>
         <span class="quiz-progress-text">${this.currentIndex + 1} / ${totalQuestions}</span>
@@ -73,7 +100,7 @@ const Quiz = {
             .map(
               (option, i) => `
             <button class="quiz-option ${this.answers[this.currentIndex] === i ? 'selected' : ''}"
-                    onclick="Quiz.selectAnswer(${i})"
+                    data-answer-index="${i}"
                     role="radio"
                     aria-checked="${this.answers[this.currentIndex] === i}"
                     id="quiz-option-${i}">
@@ -87,20 +114,47 @@ const Quiz = {
       </div>
 
       <div class="quiz-nav">
-        <button class="btn btn-outline" onclick="Quiz.prevQuestion()" ${this.currentIndex === 0 ? 'disabled style="opacity:0.5;pointer-events:none"' : ''}>
+        <button class="btn btn-outline quiz-nav-prev ${this.currentIndex === 0 ? 'quiz-nav-disabled' : ''}" data-action="prev" ${this.currentIndex === 0 ? 'disabled' : ''}>
           ← Previous
         </button>
         ${
           this.currentIndex === totalQuestions - 1
-            ? `<button class="btn btn-primary" onclick="Quiz.submit()" id="quiz-submit-btn" ${this.answers.includes(null) ? 'disabled style="opacity:0.6"' : ''}>
+            ? `<button class="btn btn-primary ${this.answers.includes(null) ? 'quiz-nav-disabled' : ''}" data-action="submit" id="quiz-submit-btn" ${this.answers.includes(null) ? 'disabled' : ''}>
                 Submit Quiz ✓
               </button>`
-            : `<button class="btn btn-primary" onclick="Quiz.nextQuestion()">
+            : `<button class="btn btn-primary" data-action="next">
                 Next →
               </button>`
         }
       </div>
     `;
+
+    // Attach event listeners via delegation (no inline onclick)
+    container.addEventListener('click', this._handleContainerClick.bind(this), { once: true });
+
+    // Focus the question card for screen readers
+    const card = document.getElementById('quiz-question-card');
+    if (card) card.focus();
+  },
+
+  /**
+   * Event delegation handler for quiz container clicks
+   * @param {Event} e - Click event
+   */
+  _handleContainerClick(e) {
+    const optionBtn = e.target.closest('[data-answer-index]');
+    if (optionBtn) {
+      this.selectAnswer(parseInt(optionBtn.dataset.answerIndex, 10));
+      return;
+    }
+
+    const actionBtn = e.target.closest('[data-action]');
+    if (actionBtn) {
+      const action = actionBtn.dataset.action;
+      if (action === 'prev') this.prevQuestion();
+      else if (action === 'next') this.nextQuestion();
+      else if (action === 'submit') this.submit();
+    }
   },
 
   selectAnswer(index) {
@@ -124,7 +178,7 @@ const Quiz = {
 
   async submit() {
     if (this.answers.includes(null)) {
-      alert('Please answer all questions before submitting.');
+      this.showError('Please answer all questions before submitting.');
       return;
     }
 
@@ -143,8 +197,7 @@ const Quiz = {
       const data = await res.json();
       this.showResults(data);
     } catch (err) {
-      console.error('Failed to submit quiz:', err);
-      alert('Failed to submit quiz. Please try again.');
+      this.showError('Failed to submit quiz. Please try again.');
     }
   },
 
@@ -162,14 +215,14 @@ const Quiz = {
       Accessibility.announce(`Quiz complete. You scored ${data.score} out of ${data.total}. ${data.grade}`);
     }
 
-    // Determine theme color for score
-    let scoreColor = 'var(--primary-500)';
-    if (data.percentage >= 70) scoreColor = 'var(--success-500)';
-    else if (data.percentage < 50) scoreColor = 'var(--error-500)';
+    // Determine theme class for score
+    let scoreClass = '';
+    if (data.percentage >= 70) scoreClass = 'quiz-score-high';
+    else if (data.percentage < 50) scoreClass = 'quiz-score-low';
 
     results.innerHTML = `
-      <div class="quiz-results-card">
-        <div class="quiz-score-circle" style="--score-percent: ${data.percentage}; background: conic-gradient(${scoreColor} ${data.percentage * 3.6}deg, var(--bg-tertiary) 0);">
+      <div class="quiz-results-card" tabindex="-1" id="quiz-results-focus">
+        <div class="quiz-score-circle ${scoreClass}" style="--score-deg: ${data.percentage * 3.6}deg">
           <div class="quiz-score-inner">
             <span class="quiz-score-number">${data.percentage}%</span>
             <span class="quiz-score-label">${data.score}/${data.total} correct</span>
@@ -183,27 +236,43 @@ const Quiz = {
           ${data.percentage >= 70 ? 'Great job! You have a solid understanding of the election process.' : 'Keep learning! Explore our timeline and voter guide to improve your knowledge.'}
         </p>
 
-        <div style="margin-bottom: 1.5rem;">
+        <div class="quiz-explanations">
           ${data.results
             .filter((r) => r.valid)
             .map((r, i) => {
               const q = this.questions.find((q) => q.id === r.questionId);
               return `
-              <div class="quiz-explanation" style="text-align: left; margin-bottom: 0.75rem; ${r.correct ? 'border-left-color: var(--success-500)' : 'border-left-color: var(--error-500)'}">
+              <div class="quiz-explanation ${r.correct ? 'quiz-explanation-correct' : 'quiz-explanation-wrong'}">
                 <strong>${r.correct ? '✅' : '❌'} Q${i + 1}: ${q?.question || 'Question'}</strong>
-                <p style="margin-top: 0.25rem">${r.explanation}</p>
+                <p>${r.explanation}</p>
               </div>
             `;
             })
             .join('')}
         </div>
 
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-          <button class="btn btn-primary" onclick="Quiz.restart()">Try Again</button>
-          <button class="btn btn-outline" onclick="navigateTo('chat')">Ask AI for Help</button>
+        <div class="quiz-results-actions">
+          <button class="btn btn-primary" data-action="restart">Try Again</button>
+          <button class="btn btn-outline" data-action="ask-ai">Ask AI for Help</button>
         </div>
       </div>
     `;
+
+    // Attach event listeners for result action buttons
+    results.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      if (btn.dataset.action === 'restart') Quiz.restart();
+      else if (btn.dataset.action === 'ask-ai') {
+        if (typeof navigateTo === 'function') navigateTo('chat');
+      }
+    });
+
+    // Move focus to results card for keyboard/screen reader users
+    requestAnimationFrame(() => {
+      const focusTarget = document.getElementById('quiz-results-focus');
+      if (focusTarget) focusTarget.focus();
+    });
   },
 
   restart() {
@@ -214,6 +283,10 @@ const Quiz = {
     if (controls) controls.style.display = 'flex';
     if (container) container.style.display = 'none';
     if (results) results.style.display = 'none';
+
+    // Move focus back to the start button
+    const startBtn = document.getElementById('start-quiz-btn');
+    if (startBtn) startBtn.focus();
   },
 };
 

@@ -1,0 +1,48 @@
+{
+  "env": {
+    "node": true,
+    "es2022": true,
+    "jest": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "extends": ["eslint:recommended"],
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "eqeqeq": "error",
+    "no-var": "error",
+    "prefer-const": "warn",
+    "no-throw-literal": "error",
+    "curly": ["error", "multi-line"],
+    "no-eval": "error",
+    "no-implied-eval": "error"
+  },
+  "overrides": [
+    {
+      "files": ["frontend/**/*.js"],
+      "env": {
+        "browser": true,
+        "node": false
+      },
+      "globals": {
+        "Quiz": "readonly",
+        "Chat": "readonly",
+        "Accessibility": "readonly",
+        "ThemeManager": "readonly",
+        "Navigation": "readonly",
+        "ParticleSystem": "readonly",
+        "FactTicker": "readonly",
+        "DataLoader": "readonly",
+        "ScrollAnimations": "readonly",
+        "navigateTo": "readonly",
+        "startQuiz": "readonly",
+        "sendMessage": "readonly",
+        "sendSuggestion": "readonly",
+        "showToast": "readonly"
+      }
+    }
+  ]
+}

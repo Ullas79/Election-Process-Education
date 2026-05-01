@@ -39,7 +39,7 @@ app.use(securityHeaders());
 app.use(parameterPollutionProtection());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: process.env.CORS_ORIGIN || 'https://elected-app-1031806887295.asia-south1.run.app',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     maxAge: 86400,
@@ -78,9 +78,12 @@ app.use('/api/', apiLimiter);
 // ────────────────────────────────────────
 const cache = apicache.middleware;
 
-app.use('/api/chat', chatRoutes); // Dynamic, do not cache
-app.use('/api/quiz', cache('1 hour'), quizRoutes); // Static content, cache for 1 hour
-app.use('/api/election', cache('1 hour'), electionRoutes); // Static content, cache for 1 hour
+app.use('/api/chat', chatRoutes); // Dynamic AI, never cache
+app.use('/api/quiz', quizRoutes); // Contains POST for answer-checking, do not cache
+app.use('/api/election/timeline', cache('1 hour')); // Static GET data, safe to cache
+app.use('/api/election/voter-guide', cache('1 hour'));
+app.use('/api/election/types', cache('1 hour'));
+app.use('/api/election', electionRoutes); // /facts is randomized, so only specific GETs above are cached
 
 // Health check endpoint
 app.get('/api/health', (_req, res) => {

@@ -25,11 +25,5 @@ export const logger = winston.createLogger({
   ],
 });
 
-// Add file transport in production
-// In serverless environments like Cloud Run, file logging is generally avoided
-// as the filesystem is ephemeral and stdout/stderr are automatically captured
-// by Cloud Logging. We will rely on the Console transport.
-if (process.env.NODE_ENV === 'production') {
-  // If structured JSON logging is needed for Cloud Logging,
-  // it can be configured here on the Console transport.
-}
+// In serverless environments like Cloud Run, stdout/stderr are automatically
+// captured by Cloud Logging, so file transports are not needed.

@@ -37,9 +37,9 @@ export function securityHeaders() {
         imgSrc: [
           "'self'",
           'data:',
-          'https:',
           'https://translate.google.com',
           'https://www.gstatic.com',
+          'https://lh3.googleusercontent.com',
         ],
         connectSrc: ["'self'", 'https://translate.googleapis.com'],
         frameSrc: [
