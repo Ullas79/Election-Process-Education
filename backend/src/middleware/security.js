@@ -65,6 +65,7 @@ export function securityHeaders() {
           'https://*.google.com',
           'https://www.google.com',
           'https://*.youtube.com',
+          'https://www.youtube.com',
           'https://youtube.com',
           'https://*.youtube-nocookie.com',
           'https://youtube-nocookie.com',

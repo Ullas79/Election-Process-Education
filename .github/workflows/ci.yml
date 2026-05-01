@@ -33,7 +33,7 @@ jobs:
       run: npm audit --audit-level=moderate || true
 
     - name: Run Test Suite with Coverage
-      run: npx jest --coverage --coverageReporters=text --coverageReporters=lcov
+      run: npm run test:coverage
       env:
         CI: true
         NODE_ENV: test
