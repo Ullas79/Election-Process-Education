@@ -8,8 +8,7 @@ import { logger } from '../utils/logger.js';
 
 const router = Router();
 
-// Curated fallback videos in case the API call fails or quota is exceeded
-const FALLBACK_VIDEOS = [
+// Curated fallback videos in case the API call fails or quota is exceeded const FALLBACK_VIDEOS = [
   {
     id: 'QtZIlxw871I',
     title: 'How to Vote using EVM-VVPAT',
@@ -45,6 +44,44 @@ const FALLBACK_VIDEOS = [
     title: 'Understanding Democracy and Voting Rights',
     thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg',
     channel: 'Democracy Today',
+  },
+// Curated fallback videos with actual, working YouTube IDs
+const FALLBACK_VIDEOS = [
+  {
+    id: 'QtZIlxw871I',
+    title: 'How to Vote using EVM-VVPAT',
+    thumbnail: 'https://img.youtube.com/vi/QtZIlxw871I/mqdefault.jpg',
+    channel: 'Election Commission of India',
+  },
+  {
+    id: 'QWs2Mx6Xo2g',
+    title: 'What is EVM? Electronic Voting Machine Explained',
+    thumbnail: 'https://img.youtube.com/vi/QWs2Mx6Xo2g/mqdefault.jpg',
+    channel: 'Republic TV',
+  },
+  {
+    id: 'On3jplIQaXs',
+    title: 'Indian Election Process Explained',
+    thumbnail: 'https://img.youtube.com/vi/On3jplIQaXs/mqdefault.jpg',
+    channel: 'Dr Sidharth Arora',
+  },
+  {
+    id: 'zRuTXeUwalA',
+    title: 'Understanding the Election System in India',
+    thumbnail: 'https://img.youtube.com/vi/zRuTXeUwalA/mqdefault.jpg',
+    channel: 'NCERT Foundation',
+  },
+  {
+    id: 'cRm6GkeV83w',
+    title: 'How Elections Work in India',
+    thumbnail: 'https://img.youtube.com/vi/cRm6GkeV83w/mqdefault.jpg',
+    channel: 'ANI Podcast',
+  },
+  {
+    id: 'MVmKqsFZiT0',
+    title: 'Right to Vote | Polity Primer',
+    thumbnail: 'https://img.youtube.com/vi/MVmKqsFZiT0/mqdefault.jpg',
+    channel: 'Drishti IAS English',
   },
 ];
 
