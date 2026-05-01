@@ -8,6 +8,11 @@ import { logger } from '../utils/logger.js';
 
 const router = Router();
 
+// Simple in-memory cache for search results
+// key: query string, value: { data, timestamp }
+const videoCache = new Map();
+const CACHE_TTL = 3600 * 1000; // 1 hour in milliseconds
+
 // Curated fallback videos in case the API call fails or quota is exceeded 
 // Curated fallback videos with actual, working YouTube IDs
 const FALLBACK_VIDEOS = [
@@ -59,8 +64,15 @@ const FALLBACK_VIDEOS = [
  */
 router.get('/videos', async (req, res) => {
   const apiKey = process.env.YOUTUBE_API_KEY || process.env.GEMINI_API_KEY;
-  const query = req.query.q || 'Indian election process education voting EVM';
+  const query = (req.query.q || 'Indian election process education voting EVM').trim();
   const maxResults = Math.min(Math.max(parseInt(req.query.maxResults) || 6, 1), 12);
+
+  // Check cache first
+  const cacheKey = `${query}_${maxResults}`;
+  const cachedData = videoCache.get(cacheKey);
+  if (cachedData && (Date.now() - cachedData.timestamp < CACHE_TTL)) {
+    return res.json(cachedData.data);
+  }
 
   // If no API key available, return curated fallback
   if (!apiKey) {
@@ -83,6 +95,8 @@ router.get('/videos', async (req, res) => {
       regionCode: 'IN',
       videoCategoryId: '27', // Education category
       key: apiKey,
+      // Optimize: only request fields we actually use
+      fields: 'items(id/videoId,snippet(title,thumbnails/medium/url,channelTitle,description,publishedAt))',
     });
 
     const response = await fetch(
@@ -104,21 +118,27 @@ router.get('/videos', async (req, res) => {
     }
 
     const data = await response.json();
-    const videos = (data.items || []).map((item) => ({
-      id: item.id.videoId,
-      title: item.snippet.title,
-      thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
-      channel: item.snippet.channelTitle,
-      description: item.snippet.description?.substring(0, 120),
-      publishedAt: item.snippet.publishedAt,
-    }));
+    const finalResponse = {
+      videos: (data.items || []).map((item) => ({
+        id: item.id.videoId,
+        title: item.snippet.title,
+        thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
+        channel: item.snippet.channelTitle,
+        description: item.snippet.description?.substring(0, 120),
+        publishedAt: item.snippet.publishedAt,
+      })),
+      source: 'youtube_api',
+      query: query,
+    };
+
+    // Store in cache
+    videoCache.set(cacheKey, {
+      data: finalResponse,
+      timestamp: Date.now()
+    });
 
     res.set('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
-    res.json({
-      videos: videos.length > 0 ? videos : FALLBACK_VIDEOS.slice(0, maxResults),
-      source: videos.length > 0 ? 'youtube_api' : 'curated',
-      query,
-    });
+    return res.json(finalResponse);
   } catch (err) {
     logger.error(`YouTube API fetch failed: ${err.message}`);
     res.json({

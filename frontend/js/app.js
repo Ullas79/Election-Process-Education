@@ -410,18 +410,29 @@ const YouTubeLoader = {
     if (loading) loading.style.display = 'flex';
 
     try {
-      const params = new URLSearchParams({ maxResults: '6' });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+      const params = new URLSearchParams({ 
+        maxResults: '6',
+        _t: Date.now() // Cache busting
+      });
       if (query) params.set('q', query);
 
-      const res = await fetch(`/api/youtube/videos?${params.toString()}`);
-      const data = await res.json();
+      const res = await fetch(`/api/youtube/videos?${params.toString()}`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
 
+      const data = await res.json();
       this.renderVideos(data.videos, data.source);
-    } catch {
+    } catch (error) {
+      console.error('YouTube Loader Error:', error);
       // Graceful fallback: show a message
       grid.innerHTML = `
         <div class="video-error" role="alert">
           <p>Unable to load videos. Please try again later.</p>
+          <button class="btn btn-secondary" onclick="YouTubeLoader.loadVideos()" style="margin-top: 1rem;">Retry</button>
         </div>
       `;
     }
@@ -454,6 +465,7 @@ const YouTubeLoader = {
             loading="lazy"
             width="320"
             height="180"
+            onerror="console.error('Thumbnail failed to load:', this.src); this.src='https://www.gstatic.com/youtube/img/branding/youtubelogo_resettable_64.png';"
           />
           <div class="video-play-overlay" aria-hidden="true">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
@@ -517,6 +529,7 @@ const YouTubeLoader = {
 
     const doSearch = () => {
       const query = searchInput.value.trim();
+      console.log('Performing video search for:', query);
       if (query) {
         this.loadVideos(query + ' Indian election education');
       }
