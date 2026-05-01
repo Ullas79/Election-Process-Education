@@ -56,6 +56,9 @@ const Chat = {
     this.isLoading = true;
     this.updateSendButton(true);
 
+    // Track chat message in Google Analytics
+    if (typeof Analytics !== 'undefined') Analytics.trackChatMessage(message.length);
+
     // Show typing indicator
     const typingId = this.showTypingIndicator();
 

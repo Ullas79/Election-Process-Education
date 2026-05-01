@@ -19,6 +19,7 @@ import { logger } from './utils/logger.js';
 import chatRoutes from './routes/chat.js';
 import quizRoutes from './routes/quiz.js';
 import electionRoutes from './routes/election.js';
+import youtubeRoutes from './routes/youtube.js';
 
 // Load environment variables
 dotenv.config();
@@ -84,6 +85,7 @@ app.use('/api/election/timeline', cache('1 hour')); // Static GET data, safe to 
 app.use('/api/election/voter-guide', cache('1 hour'));
 app.use('/api/election/types', cache('1 hour'));
 app.use('/api/election', electionRoutes); // /facts is randomized, so only specific GETs above are cached
+app.use('/api/youtube', cache('1 hour'), youtubeRoutes); // YouTube API — cached to minimize quota usage
 
 // Health check endpoint
 app.get('/api/health', (_req, res) => {

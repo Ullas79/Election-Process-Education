@@ -53,6 +53,7 @@
         <a href="#timeline" class="nav-link" role="menuitem" data-section="timeline">Timeline</a>
         <a href="#voter-guide" class="nav-link" role="menuitem" data-section="voter-guide">Voter Guide</a>
         <a href="#election-types" class="nav-link" role="menuitem" data-section="election-types">Elections</a>
+        <a href="#videos" class="nav-link" role="menuitem" data-section="videos">Videos</a>
         <a href="#quiz" class="nav-link" role="menuitem" data-section="quiz">Quiz</a>
         <a href="#chat" class="nav-link" role="menuitem" data-section="chat">AI Assistant</a>
       </div>
@@ -186,6 +187,48 @@
 
         <div class="election-types-grid" id="election-types-grid">
           <!-- Election type cards loaded dynamically -->
+        </div>
+      </div>
+    </section>
+    <!-- ─── Educational Videos (YouTube Data API v3) ─── -->
+    <section class="section section-alt" id="videos" aria-labelledby="videos-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">🎬 Video Library</span>
+          <h2 id="videos-title" class="section-title">Educational <span class="gradient-text">Videos</span></h2>
+          <p class="section-subtitle">Watch curated election education videos powered by YouTube Data API.</p>
+        </div>
+
+        <div class="video-search" role="search" aria-label="Search election videos">
+          <label for="video-search-input" class="sr-only">Search election education videos</label>
+          <input
+            type="text"
+            id="video-search-input"
+            class="chat-input"
+            placeholder="Search for election topics (e.g., EVM, NOTA, voter ID)..."
+            maxlength="100"
+            autocomplete="off"
+            aria-label="Search election education videos"
+          />
+          <button class="btn btn-primary" id="video-search-btn" aria-label="Search videos">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Search
+          </button>
+        </div>
+
+        <div class="video-grid" id="video-grid" role="list" aria-label="Election education videos">
+          <!-- Videos loaded dynamically from YouTube API -->
+          <div class="video-loading" id="video-loading" aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            Loading videos...
+          </div>
+        </div>
+
+        <div class="video-attribution">
+          <p>Videos provided by <strong>YouTube Data API v3</strong> • Search results are filtered for educational content</p>
         </div>
       </div>
     </section>
@@ -370,6 +413,7 @@
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <!-- Scripts (deferred for non-blocking page render) -->
+  <script src="js/analytics.js" defer></script>
   <script src="js/app.js" defer></script>
   <script src="js/timeline.js" defer></script>
   <script src="js/chat.js" defer></script>

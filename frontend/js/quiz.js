@@ -59,6 +59,9 @@ const Quiz = {
       this.answers = new Array(data.questions.length).fill(null);
       this.submitted = false;
 
+      // Track quiz start in Google Analytics
+      if (typeof Analytics !== 'undefined') Analytics.trackQuizStart(category, difficulty);
+
       // Show quiz, hide controls and results
       document.getElementById('quiz-controls').style.display = 'none';
       document.getElementById('quiz-results').style.display = 'none';
@@ -214,6 +217,9 @@ const Quiz = {
     if (typeof Accessibility !== 'undefined') {
       Accessibility.announce(`Quiz complete. You scored ${data.score} out of ${data.total}. ${data.grade}`);
     }
+
+    // Track quiz completion in Google Analytics
+    if (typeof Analytics !== 'undefined') Analytics.trackQuizComplete(data.score, data.total, data.percentage);
 
     // Determine theme class for score
     let scoreClass = '';

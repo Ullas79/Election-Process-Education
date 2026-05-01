@@ -41,7 +41,9 @@
         "startQuiz": "readonly",
         "sendMessage": "readonly",
         "sendSuggestion": "readonly",
-        "showToast": "readonly"
+        "showToast": "readonly",
+        "YouTubeLoader": "readonly",
+        "Analytics": "readonly"
       }
     }
   ]

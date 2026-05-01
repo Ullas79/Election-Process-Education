@@ -24,6 +24,9 @@ const ThemeManager = {
     localStorage.setItem('elected-theme', theme);
     const icon = document.getElementById('theme-icon');
     if (icon) icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+
+    // Track theme change in Google Analytics
+    if (typeof Analytics !== 'undefined') Analytics.trackThemeSwitch(theme);
   },
 };
 
@@ -321,6 +324,8 @@ document.addEventListener('click', (e) => {
   const tab = e.target.closest('.guide-tab');
   if (tab) {
     DataLoader.renderGuideTab(tab.dataset.tab);
+    // Track guide tab navigation in Google Analytics
+    if (typeof Analytics !== 'undefined') Analytics.trackGuideTab(tab.dataset.tab);
   }
 });
 
@@ -367,31 +372,185 @@ window.findNearbyPollingStation = function() {
     (position) => {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
-      // Update iframe src to search for polling stations near the user
-      const mapUrl = `https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d15000!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1spolling+station!5e0!3m2!1sen!2sin!4v1`;
+      // Use Google Maps Embed API to search for polling stations near the user's coordinates
+      const mapUrl = `https://www.google.com/maps/embed/v1/search?key=${encodeURIComponent('AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8')}&q=polling+station+near+${lat},${lng}&zoom=14`;
       
       iframe.src = mapUrl;
       btn.innerHTML = '<span aria-hidden="true">✅</span> Location Found';
+      if (typeof Analytics !== 'undefined') Analytics.trackPollingStationSearch(true);
       setTimeout(() => btn.innerHTML = originalHtml, 3000);
     }, 
     () => {
       showToast('Unable to retrieve your location. Please check your browser permissions.');
+      if (typeof Analytics !== 'undefined') Analytics.trackPollingStationSearch(false);
       btn.innerHTML = originalHtml;
     }
   );
 };
 
 // ════════════════════════════════════════
+// YouTube Video Loader (YouTube Data API v3)
+// ════════════════════════════════════════
+const YouTubeLoader = {
+  async init() {
+    await this.loadVideos();
+    this.setupSearch();
+  },
+
+  /**
+   * Fetch videos from the backend YouTube API proxy
+   * @param {string} query - Search query
+   */
+  async loadVideos(query) {
+    const grid = document.getElementById('video-grid');
+    const loading = document.getElementById('video-loading');
+    if (!grid) return;
+
+    // Show loading state
+    if (loading) loading.style.display = 'flex';
+
+    try {
+      const params = new URLSearchParams({ maxResults: '6' });
+      if (query) params.set('q', query);
+
+      const res = await fetch(`/api/youtube/videos?${params.toString()}`);
+      const data = await res.json();
+
+      this.renderVideos(data.videos, data.source);
+    } catch {
+      // Graceful fallback: show a message
+      grid.innerHTML = `
+        <div class="video-error" role="alert">
+          <p>Unable to load videos. Please try again later.</p>
+        </div>
+      `;
+    }
+  },
+
+  /**
+   * Render video cards into the grid
+   * @param {Array} videos - Video objects from API
+   * @param {string} source - 'youtube_api' or 'curated'
+   */
+  renderVideos(videos, source) {
+    const grid = document.getElementById('video-grid');
+    if (!grid) return;
+
+    if (!videos || videos.length === 0) {
+      grid.innerHTML = '<p class="video-empty">No videos found. Try a different search term.</p>';
+      return;
+    }
+
+    grid.innerHTML = videos.map(video => `
+      <article class="video-card" role="listitem" id="video-${video.id}">
+        <button class="video-thumbnail-btn" 
+                data-video-id="${video.id}" 
+                data-video-title="${video.title.replace(/"/g, '&quot;')}"
+                aria-label="Play video: ${video.title.replace(/"/g, '&quot;')}">
+          <img 
+            src="${video.thumbnail}" 
+            alt="Thumbnail for ${video.title.replace(/"/g, '&quot;')}"
+            class="video-thumbnail"
+            loading="lazy"
+            width="320"
+            height="180"
+          />
+          <div class="video-play-overlay" aria-hidden="true">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </div>
+        </button>
+        <div class="video-info">
+          <h3 class="video-title">${video.title}</h3>
+          <p class="video-channel">${video.channel}</p>
+          ${source === 'youtube_api' ? '<span class="video-badge">YouTube API</span>' : ''}
+        </div>
+      </article>
+    `).join('');
+
+    // Event delegation for video play clicks
+    grid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.video-thumbnail-btn');
+      if (!btn) return;
+
+      const videoId = btn.dataset.videoId;
+      const videoTitle = btn.dataset.videoTitle;
+      this.playVideo(videoId, btn);
+
+      // Track video play in Google Analytics
+      if (typeof Analytics !== 'undefined') Analytics.trackVideoPlay(videoId, videoTitle);
+    });
+  },
+
+  /**
+   * Replace thumbnail with embedded YouTube player
+   * @param {string} videoId - YouTube video ID
+   * @param {HTMLElement} btn - The thumbnail button to replace
+   */
+  playVideo(videoId, btn) {
+    const card = btn.closest('.video-card');
+    if (!card) return;
+
+    const player = document.createElement('div');
+    player.className = 'guide-video-wrapper';
+    player.innerHTML = `
+      <iframe 
+        class="guide-video-iframe"
+        src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+        title="YouTube video player"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    `;
+
+    btn.replaceWith(player);
+  },
+
+  /**
+   * Setup search functionality
+   */
+  setupSearch() {
+    const searchInput = document.getElementById('video-search-input');
+    const searchBtn = document.getElementById('video-search-btn');
+    if (!searchInput || !searchBtn) return;
+
+    const doSearch = () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        this.loadVideos(query + ' Indian election education');
+      }
+    };
+
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doSearch();
+    });
+  },
+};
+
+// ════════════════════════════════════════
 // Initialize Application
 // ════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Google Analytics 4
+  if (typeof Analytics !== 'undefined') Analytics.init();
+
   ThemeManager.init();
   Navigation.init();
   ParticleSystem.init();
   FactTicker.init();
   DataLoader.loadElectionTypes();
   DataLoader.loadVoterGuide();
+  YouTubeLoader.init();
   ScrollAnimations.init();
 
-  // Application ready
+  // Observe Google Translate language changes
+  const translateObserver = new MutationObserver(() => {
+    const htmlLang = document.documentElement.lang;
+    if (htmlLang && htmlLang !== 'en' && typeof Analytics !== 'undefined') {
+      Analytics.trackLanguageChange(htmlLang);
+    }
+  });
+  translateObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 });
