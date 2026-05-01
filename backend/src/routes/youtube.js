@@ -8,43 +8,7 @@ import { logger } from '../utils/logger.js';
 
 const router = Router();
 
-// Curated fallback videos in case the API call fails or quota is exceeded const FALLBACK_VIDEOS = [
-  {
-    id: 'QtZIlxw871I',
-    title: 'How to Vote using EVM-VVPAT',
-    thumbnail: 'https://img.youtube.com/vi/QtZIlxw871I/mqdefault.jpg',
-    channel: 'Election Commission of India',
-  },
-  {
-    id: 'bTVMGO80cEo',
-    title: 'What is EVM? Electronic Voting Machine Explained',
-    thumbnail: 'https://img.youtube.com/vi/bTVMGO80cEo/mqdefault.jpg',
-    channel: 'Election Education',
-  },
-  {
-    id: 'YFjxBqS8bss',
-    title: 'Indian Election Process Explained',
-    thumbnail: 'https://img.youtube.com/vi/YFjxBqS8bss/mqdefault.jpg',
-    channel: 'Democracy Education',
-  },
-  {
-    id: 'A-4dIImaodQ',
-    title: 'NOTA in Indian Elections',
-    thumbnail: 'https://img.youtube.com/vi/A-4dIImaodQ/mqdefault.jpg',
-    channel: 'Civic Education',
-  },
-  {
-    id: 'U3OwSEBCL-g',
-    title: 'How Elections Work in India',
-    thumbnail: 'https://img.youtube.com/vi/U3OwSEBCL-g/mqdefault.jpg',
-    channel: 'Education Channel',
-  },
-  {
-    id: 'dQw4w9WgXcQ',
-    title: 'Understanding Democracy and Voting Rights',
-    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg',
-    channel: 'Democracy Today',
-  },
+// Curated fallback videos in case the API call fails or quota is exceeded 
 // Curated fallback videos with actual, working YouTube IDs
 const FALLBACK_VIDEOS = [
   {
