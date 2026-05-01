@@ -20,6 +20,7 @@ import chatRoutes from './routes/chat.js';
 import quizRoutes from './routes/quiz.js';
 import electionRoutes from './routes/election.js';
 import youtubeRoutes from './routes/youtube.js';
+import configRoutes from './routes/config.js';
 
 // Load environment variables
 dotenv.config();
@@ -80,6 +81,7 @@ app.use('/api/', apiLimiter);
 const cache = apicache.middleware;
 
 app.use('/api/chat', chatRoutes); // Dynamic AI, never cache
+app.use('/api/config', configRoutes); // Dynamic AI, never cache
 app.use('/api/quiz', quizRoutes); // Contains POST for answer-checking, do not cache
 app.use('/api/election/timeline', cache('1 hour')); // Static GET data, safe to cache
 app.use('/api/election/voter-guide', cache('1 hour'));

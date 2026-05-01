@@ -68,7 +68,7 @@ const Quiz = {
       document.getElementById('quiz-container').style.display = 'block';
 
       this.renderQuestion();
-    } catch (err) {
+    } catch (_err) {
       this.showError('Failed to load quiz questions. Please try again.');
     }
   },
@@ -199,7 +199,7 @@ const Quiz = {
 
       const data = await res.json();
       this.showResults(data);
-    } catch (err) {
+    } catch (_err) {
       this.showError('Failed to submit quiz. Please try again.');
     }
   },
@@ -299,7 +299,7 @@ const Quiz = {
 /**
  * Start quiz (called from HTML onclick)
  */
-function startQuiz() {
+window.startQuiz = function() {
   Quiz.start();
 }
 

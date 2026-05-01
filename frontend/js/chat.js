@@ -185,7 +185,6 @@ const Chat = {
    * @returns {string} Sanitized HTML
    */
   sanitizeHTML(html) {
-    const ALLOWED_TAGS = ['p', 'h2', 'h3', 'strong', 'em', 'code', 'ul', 'ol', 'li', 'br'];
     const temp = document.createElement('div');
     temp.innerHTML = html;
 
@@ -225,7 +224,7 @@ const Chat = {
       // Inline code
       .replace(/`(.*?)`/g, '<code>$1</code>')
       // Unordered lists
-      .replace(/^\- (.*$)/gm, '<li>$1</li>')
+      .replace(/^- (.*$)/gm, '<li>$1</li>')
       .replace(/^\* (.*$)/gm, '<li>$1</li>')
       // Ordered lists
       .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
@@ -257,7 +256,7 @@ const Chat = {
  * Send a suggestion chip message
  * @param {string} text - The suggestion text
  */
-function sendSuggestion(text) {
+window.sendSuggestion = function(text) {
   const input = document.getElementById('chat-input');
   if (input) {
     input.value = text;
@@ -268,7 +267,7 @@ function sendSuggestion(text) {
 /**
  * Send a message (called from HTML onclick)
  */
-function sendMessage() {
+window.sendMessage = function() {
   Chat.send();
 }
 

@@ -27,7 +27,7 @@ jobs:
       run: npm ci
 
     - name: Run Linter
-      run: npx eslint backend/src/ --ext .js --max-warnings 10
+      run: npx eslint backend/src frontend/js --max-warnings 10
 
     - name: Run Security Audit
       run: npm audit --audit-level=moderate || true

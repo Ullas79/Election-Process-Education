@@ -305,7 +305,7 @@ const ScrollAnimations = {
 // ════════════════════════════════════════
 // Global Navigation Helper
 // ════════════════════════════════════════
-function navigateTo(sectionId) {
+window.navigateTo = function(sectionId) {
   const section = document.getElementById(sectionId);
   if (section) {
     section.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -356,7 +356,7 @@ function showToast(message, type = 'error') {
   }, 4000);
 }
 
-window.findNearbyPollingStation = function() {
+window.findNearbyPollingStation = async function() {
   const btn = document.getElementById('locate-station-btn');
   const iframe = document.getElementById('google-maps-iframe');
   
@@ -368,24 +368,37 @@ window.findNearbyPollingStation = function() {
   const originalHtml = btn.innerHTML;
   btn.innerHTML = '<span aria-hidden="true">⏳</span> Locating...';
   
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      // Use Google Maps Embed API to search for polling stations near the user's coordinates
-      const mapUrl = `https://www.google.com/maps/embed/v1/search?key=${encodeURIComponent('AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8')}&q=polling+station+near+${lat},${lng}&zoom=14`;
-      
-      iframe.src = mapUrl;
-      btn.innerHTML = '<span aria-hidden="true">✅</span> Location Found';
-      if (typeof Analytics !== 'undefined') Analytics.trackPollingStationSearch(true);
-      setTimeout(() => btn.innerHTML = originalHtml, 3000);
-    }, 
-    () => {
-      showToast('Unable to retrieve your location. Please check your browser permissions.');
-      if (typeof Analytics !== 'undefined') Analytics.trackPollingStationSearch(false);
-      btn.innerHTML = originalHtml;
-    }
-  );
+  try {
+    // 1. Fetch public API key from backend (avoid hardcoding for security)
+    const configRes = await fetch('/api/config/maps-key');
+    if (!configRes.ok) throw new Error('API key not found');
+    const { key } = await configRes.json();
+
+    // 2. Get user position
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        // Use Google Maps Embed API with the securely fetched key
+        const mapUrl = `https://www.google.com/maps/embed/v1/search?key=${encodeURIComponent(key)}&q=polling+station+near+${lat},${lng}&zoom=14`;
+        
+        iframe.src = mapUrl;
+        btn.innerHTML = '<span aria-hidden="true">✅</span> Location Found';
+        if (typeof Analytics !== 'undefined') Analytics.trackPollingStationSearch(true);
+        setTimeout(() => btn.innerHTML = originalHtml, 3000);
+      }, 
+      (err) => {
+        console.error('Geolocation error:', err);
+        showToast('Unable to retrieve your location. Please check your browser permissions.');
+        if (typeof Analytics !== 'undefined') Analytics.trackPollingStationSearch(false);
+        btn.innerHTML = originalHtml;
+      }
+    );
+  } catch (err) {
+    console.error('Maps Config error:', err);
+    showToast('Service temporarily unavailable. Please try again later.');
+    btn.innerHTML = originalHtml;
+  }
 };
 
 // ════════════════════════════════════════
