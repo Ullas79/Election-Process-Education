@@ -132,8 +132,8 @@ const Quiz = {
       </div>
     `;
 
-    // Attach event listeners via delegation (no inline onclick)
-    container.addEventListener('click', this._handleContainerClick.bind(this), { once: true });
+    // Attach event listeners via delegation
+    container.onclick = (e) => this._handleContainerClick(e);
 
     // Focus the question card for screen readers
     const card = document.getElementById('quiz-question-card');

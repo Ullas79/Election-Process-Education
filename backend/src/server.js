@@ -68,6 +68,11 @@ app.use(
 app.use(express.static(join(__dirname, '../../frontend'), {
   maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
   etag: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('sw.js') || path.endsWith('index.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
 }));
 
 // ────────────────────────────────────────

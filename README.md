@@ -98,6 +98,8 @@ Many citizens, especially first-time voters, find the election process complex a
 | `GET` | `/api/election/voter-guide` | Get voter registration guide |
 | `GET` | `/api/election/types` | Get election type information |
 | `GET` | `/api/election/facts` | Get random election facts |
+| `GET` | `/api/youtube/videos` | Search election education videos (YouTube API v3) |
+| `GET` | `/api/config/maps-key` | Get public Google Maps Embed API key (rate-limited) |
 | `GET` | `/api/health` | Health check endpoint |
 
 ---
@@ -176,7 +178,9 @@ Election-Process-Education/
 │   │   ├── routes/
 │   │   │   ├── chat.js            # AI chat endpoints
 │   │   │   ├── quiz.js            # Quiz endpoints
-│   │   │   └── election.js        # Election data endpoints
+│   │   │   ├── election.js        # Election data endpoints
+│   │   │   ├── youtube.js         # YouTube API proxy with caching
+│   │   │   └── config.js          # Public config (Maps key) endpoint
 │   │   ├── services/
 │   │   │   └── geminiService.js   # Google Gemini AI integration
 │   │   ├── middleware/
@@ -190,19 +194,25 @@ Election-Process-Education/
 │       ├── chat.test.js           # Chat API tests
 │       ├── quiz.test.js           # Quiz API tests
 │       ├── election.test.js       # Election data tests
-│       └── security.test.js       # Security & XSS tests
+│       ├── security.test.js       # Security & XSS tests
+│       ├── youtube.test.js        # YouTube API tests
+│       └── frontend.test.js       # Frontend unit tests (jsdom)
 ├── frontend/
 │   ├── index.html                 # Single-page application
+│   ├── sw.js                      # Service Worker for offline support
+│   ├── manifest.json              # PWA manifest
 │   ├── css/
 │   │   ├── styles.css             # Design system & components
 │   │   └── animations.css         # Animations & micro-interactions
 │   └── js/
-│       ├── app.js                 # Main app (theme, nav, data loading)
+│       ├── app.js                 # Main app (theme, nav, data loading, YouTube)
 │       ├── timeline.js            # Interactive timeline module
 │       ├── chat.js                # AI chat module
 │       ├── quiz.js                # Quiz engine module
+│       ├── analytics.js           # Google Analytics 4 integration
 │       └── accessibility.js       # Accessibility enhancements
 ├── package.json
+├── eslint.config.js               # ESLint Flat Config (v9+)
 ├── Dockerfile                     # Multi-stage production build
 ├── .dockerignore                  # Docker build exclusions
 ├── .env.example
@@ -243,11 +253,13 @@ Election-Process-Education/
 
 ## 🧪 Testing
 
-The test suite covers **54 tests** across 4 suites:
+The test suite covers **85+ tests** across 6 suites:
 - **Chat API**: Input validation, sanitization, conversation history, error handling
 - **Quiz API**: Question filtering, answer checking, scoring, edge cases
 - **Election Data API**: Timeline, voter guide, election types, facts
 - **Security**: XSS sanitization (11 vectors), CSP header verification, API protection
+- **YouTube API**: Video search, parameter validation, fallback behavior
+- **Frontend**: HTML sanitization, markdown formatting, toast notifications, accessibility helpers
 - **Health Check**: Server status verification
 
 ---

@@ -51,7 +51,6 @@ export function securityHeaders() {
           'https://lh3.googleusercontent.com',
           'https://www.gstatic.com',
           'https://*.google-analytics.com',
-          'https:',
         ],
         connectSrc: [
           "'self'",

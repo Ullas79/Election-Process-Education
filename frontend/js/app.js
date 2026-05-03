@@ -153,6 +153,8 @@ const FactTicker = {
 // Data Loaders
 // ════════════════════════════════════════
 const DataLoader = {
+  _voterGuide: null,
+
   async loadElectionTypes() {
     try {
       const res = await fetch('/api/election/types');
@@ -197,7 +199,7 @@ const DataLoader = {
     try {
       const res = await fetch('/api/election/voter-guide');
       const data = await res.json();
-      window._voterGuide = data.guide;
+      this._voterGuide = data.guide;
       this.renderGuideTab('eligibility');
     } catch {
       // Graceful degradation: voter guide renders empty if data fails to load
@@ -205,7 +207,7 @@ const DataLoader = {
   },
 
   renderGuideTab(tabName) {
-    const guide = window._voterGuide;
+    const guide = this._voterGuide;
     if (!guide) return;
 
     const content = document.getElementById('guide-content');
@@ -405,9 +407,10 @@ window.findNearbyPollingStation = async function() {
 // YouTube Video Loader (YouTube Data API v3)
 // ════════════════════════════════════════
 const YouTubeLoader = {
+  _gridListenerAttached: false,
+
   async init() {
     await this.loadVideos();
-    this.setupSearch();
   },
 
   /**
@@ -426,10 +429,7 @@ const YouTubeLoader = {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-      const params = new URLSearchParams({ 
-        maxResults: '6',
-        _t: Date.now() // Cache busting
-      });
+      const params = new URLSearchParams({ maxResults: '6' });
       if (query) params.set('q', query);
 
       const res = await fetch(`/api/youtube/videos?${params.toString()}`, {
@@ -478,7 +478,9 @@ const YouTubeLoader = {
             loading="lazy"
             width="320"
             height="180"
-            onerror="console.error('Thumbnail failed to load:', this.src); this.src='https://www.gstatic.com/youtube/img/branding/youtubelogo_resettable_64.png';"
+            referrerpolicy="no-referrer"
+            crossorigin="anonymous"
+            onerror="console.error('Thumbnail failed to load:', this.src); this.style.display='none'; this.nextElementSibling.style.display='flex';"
           />
           <div class="video-play-overlay" aria-hidden="true">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
@@ -494,18 +496,21 @@ const YouTubeLoader = {
       </article>
     `).join('');
 
-    // Event delegation for video play clicks
-    grid.addEventListener('click', (e) => {
-      const btn = e.target.closest('.video-thumbnail-btn');
-      if (!btn) return;
+    // Attach event delegation once (not on every render)
+    if (!this._gridListenerAttached) {
+      grid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.video-thumbnail-btn');
+        if (!btn) return;
 
-      const videoId = btn.dataset.videoId;
-      const videoTitle = btn.dataset.videoTitle;
-      this.playVideo(videoId, btn);
+        const videoId = btn.dataset.videoId;
+        const videoTitle = btn.dataset.videoTitle;
+        this.playVideo(videoId, btn);
 
-      // Track video play in Google Analytics
-      if (typeof Analytics !== 'undefined') Analytics.trackVideoPlay(videoId, videoTitle);
-    });
+        // Track video play in Google Analytics
+        if (typeof Analytics !== 'undefined') Analytics.trackVideoPlay(videoId, videoTitle);
+      });
+      this._gridListenerAttached = true;
+    }
   },
 
   /**
@@ -532,27 +537,6 @@ const YouTubeLoader = {
     btn.replaceWith(player);
   },
 
-  /**
-   * Setup search functionality
-   */
-  setupSearch() {
-    const searchInput = document.getElementById('video-search-input');
-    const searchBtn = document.getElementById('video-search-btn');
-    if (!searchInput || !searchBtn) return;
-
-    const doSearch = () => {
-      const query = searchInput.value.trim();
-      console.log('Performing video search for:', query);
-      if (query) {
-        this.loadVideos(query + ' Indian election education');
-      }
-    };
-
-    searchBtn.addEventListener('click', doSearch);
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') doSearch();
-    });
-  },
 };
 
 // ════════════════════════════════════════

@@ -8,10 +8,28 @@ import { logger } from '../utils/logger.js';
 
 const router = Router();
 
-// Simple in-memory cache for search results
+// Bounded in-memory cache for search results
 // key: query string, value: { data, timestamp }
 const videoCache = new Map();
 const CACHE_TTL = 3600 * 1000; // 1 hour in milliseconds
+const CACHE_MAX_SIZE = 50;     // Maximum cache entries to prevent unbounded memory growth
+
+/**
+ * Evict expired entries and enforce size limit
+ */
+function pruneCache() {
+  const now = Date.now();
+  for (const [key, value] of videoCache) {
+    if (now - value.timestamp > CACHE_TTL) {
+      videoCache.delete(key);
+    }
+  }
+  // If still over limit, remove oldest entries
+  while (videoCache.size > CACHE_MAX_SIZE) {
+    const oldestKey = videoCache.keys().next().value;
+    videoCache.delete(oldestKey);
+  }
+}
 
 // Curated fallback videos in case the API call fails or quota is exceeded 
 // Curated fallback videos with actual, working YouTube IDs
@@ -131,7 +149,8 @@ router.get('/videos', async (req, res) => {
       query: query,
     };
 
-    // Store in cache
+    // Store in cache (prune first to enforce size limits)
+    pruneCache();
     videoCache.set(cacheKey, {
       data: finalResponse,
       timestamp: Date.now()

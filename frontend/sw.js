@@ -1,4 +1,4 @@
-const CACHE_NAME = 'elected-v1';
+const CACHE_NAME = 'elected-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -39,6 +39,10 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   // Don't cache API requests
   if (event.request.url.includes('/api/')) return;
+  
+  // Don't intercept cross-origin requests (e.g. YouTube thumbnails, Google Fonts)
+  // This prevents opaque responses from causing ERR_FAILED in the Service Worker
+  if (!event.request.url.startsWith(self.location.origin)) return;
   
   event.respondWith(
     fetch(event.request)
